@@ -18,8 +18,6 @@
 
 using namespace std;
 
-int counter = 0;
-
 string constructLine(int lineNumber, string label, string op, string operands);
 
 void deleteFile(string name);

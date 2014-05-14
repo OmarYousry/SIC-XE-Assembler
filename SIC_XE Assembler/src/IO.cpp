@@ -23,6 +23,8 @@
 //	return 0;
 //}
 
+int counter = 0;
+
 string constructLine(int address, string label, string op, string operands) {
 	int length;
 	char spaceChar = SPACE_CHAR
