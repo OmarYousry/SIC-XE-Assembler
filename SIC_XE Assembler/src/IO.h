@@ -22,12 +22,14 @@ string constructLine(int lineNumber, string label, string op, string operands);
 
 void deleteFile(string name);
 
-void writeLine(string line, string name);
+void writeLine(ofstream* file, string line);
+
+//void writeLine(string line, string name);
 
 string readLine(ifstream* file);
 
 void writeHeader();
 
-void writeError(string error, string fileName);
+void writeError(ofstream* file, string error);
 
 #endif

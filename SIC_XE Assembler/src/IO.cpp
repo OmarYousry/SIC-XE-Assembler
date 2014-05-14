@@ -3,9 +3,12 @@
 //int main() {
 //	deleteFile("test.txt");
 //
-//	writeLine(constructLine(10, 11, "ALPHA", "LDA", "#10"), "test.txt");
-//	writeLine(constructLine(20, 25, "BETA", "LDX", "TEN"), "test.txt");
-//	writeLine(constructLine(30, 17, "", "LDT", "FIVE"), "test.txt");
+//	ofstream ofile;
+//	ofile.open("test.txt", std::ios::app);
+//	writeLine(&ofile, constructLine(11, "ALPHA", "LDA", "#10"));
+//	writeLine(&ofile, constructLine(25, "BETA", "LDX", "TEN"));
+//	writeLine(&ofile, constructLine(17, "", "LDT", "FIVE"));
+//	ofile.close();
 //
 //	ifstream file;
 //	file.open("test.txt");
@@ -61,12 +64,17 @@ void deleteFile(string name) {
 		cout << "error deleting " << name << endl;
 }
 
-void writeLine(string line, string name) {
-	ofstream file;
-	file.open("test.txt", std::ios_base::app);
-	file << line << endl;
-	file.close();
+void writeLine(ofstream* file, string line)
+{
+	*file << line << endl;
 }
+
+//void writeLine(string line, string name) {
+//	ofstream file;
+//	file.open("test.txt", std::ios_base::app);
+//	file << line << endl;
+//	file.close();
+//}
 
 string readLine(ifstream* file) {
 	string line = "";
@@ -78,7 +86,7 @@ void writeHeader() {
 
 }
 
-void writeError(string error, string fileName) {
+void writeError(ofstream* file, string error) {
 	int errLength = error.length();
 	int offset = 31 - errLength - 3;
 	int excess;
@@ -93,5 +101,5 @@ void writeError(string error, string fileName) {
 
 	adjustStringLength(&error, errLength + excess, spaceChar, false);
 
-	writeLine(error, fileName);
+	writeLine(file, error);
 }

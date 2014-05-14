@@ -2,7 +2,7 @@
 
 map<string, OpInfo*>* opTable = NULL;
 
-void fillOpTab() {
+static void fillOpTab() {
 
 	OpInfo* info;
 
