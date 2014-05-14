@@ -1,21 +1,9 @@
-#include <map>
-#include <string>
+#include "OpTab.h"
 
-using namespace std;
-
-const unsigned char FORMAT_1 = 1;
-const unsigned char FORMAT_2 = 2;
-const unsigned char FORMAT_3_4 = 3;
-
-struct OpInfo {
-	string mnmoneic;
-	unsigned char format;
-	unsigned char opCode;
-};
-
-void fillOpTab(map<string, OpInfo*>* opTab) {
+void fillOpTab() {
 
 	OpInfo* info;
+
 	info = new OpInfo;
 	info->mnmoneic = "FIX";
 	info->format = FORMAT_1;
@@ -371,6 +359,14 @@ void fillOpTab(map<string, OpInfo*>* opTab) {
 	opTab->insert(pair<string, OpInfo*>("MULF", info));
 
 	info = NULL;
+}
+
+map<string, OpInfo*>* getOpTab() {
+	if (opTab == NULL) {
+		opTab = new map<string, OpInfo*>();
+		fillOpTab();
+	}
+	return opTab;
 }
 
 //int main(int argc, char **argv) {

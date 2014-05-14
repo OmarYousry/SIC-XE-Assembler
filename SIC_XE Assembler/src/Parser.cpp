@@ -1,14 +1,4 @@
-#include <iostream>
-#include <string>
-
-using namespace std;
-
-struct parsedLine {
-	string lable;
-	string opcode;
-	string operand1;
-	string operand2;
-};
+#include "Parser.h"
 
 bool needNoOperands(string s) {
 	return s.compare("RSUB") == 0 || s.compare("NOBASE") == 0

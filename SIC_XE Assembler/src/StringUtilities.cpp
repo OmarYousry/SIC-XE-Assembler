@@ -1,8 +1,24 @@
-#include <string>
-#include <iostream>
-#include <vector>
+#include "StringUtilities.h"
 
-using namespace std;
+string intToString(int integer, bool hex) {
+	stringstream ss;
+	string intAsStr;
+	if (hex)
+		ss << uppercase << std::hex << integer;
+	else
+		ss << integer;
+	intAsStr = ss.str();
+	return intAsStr;
+}
+
+void adjustStringLength(string* line, int length, char filling, bool lhs) {
+	if (lhs)
+		for (int i = line->length(); i < length; i++)
+			*line = filling + *line;
+	else
+		for (int i = line->length(); i < length; i++)
+			*line += filling;
+}
 
 string toUpperCase(string x) {
 	unsigned int i;
