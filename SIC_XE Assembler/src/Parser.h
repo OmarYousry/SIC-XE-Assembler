@@ -12,4 +12,6 @@ struct parsedLine {
 	string operand2;
 };
 
+parsedLine parse(string line);
+
 #endif
