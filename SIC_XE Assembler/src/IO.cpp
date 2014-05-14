@@ -20,6 +20,9 @@ void adjustStringLength(string* line, int length, char filling, bool lhs); /* st
 void deleteFile(string name);
 void writeLine(string line, string name);
 string readLine(ifstream* file);
+void writeHeader();
+void writeError(string error, string fileName);
+int counter = 0;
 
 //int main() {
 //	deleteFile("test.txt");
@@ -64,31 +67,25 @@ void adjustStringLength(string* line, int length, char filling, bool lhs) {
 			*line += filling;
 }
 
-string constructLine(int lineNumber, int address, string label, string op,
-		string operands) {
+string constructLine(int address, string label, string op, string operands)
+{
 	int length;
-	char spaceChar = SPACE_CHAR
-	;
+	char spaceChar = SPACE_CHAR;
 	char zeroChar = ZERO_CHAR;
 	string line;
-	string lineNumberStr = intToString(lineNumber, false);
-	length = LINE_NUMBER_LENGTH
-	;
-	string addressStr = intToString(address, true);
+	string lineNumberStr = parseInt(++counter, false);
+	length = LINE_NUMBER_LENGTH;
+	string addressStr = parseInt(address, true);
 	adjustStringLength(&lineNumberStr, length, spaceChar, false);
 	length = 6;
 	adjustStringLength(&addressStr, length, zeroChar, true);
-	length = ADDRESS_LENGTH
-	;
+	length = ADDRESS_LENGTH;
 	adjustStringLength(&addressStr, length, spaceChar, false);
-	length = LABEL_LENGTH
-	;
+	length = LABEL_LENGTH;
 	adjustStringLength(&label, length, spaceChar, false);
-	length = MNEMONIC_LENGTH
-	;
+	length = MNEMONIC_LENGTH;
 	adjustStringLength(&op, length, spaceChar, false);
-	length = OPERANDS_LENGTH
-	;
+	length = OPERANDS_LENGTH;
 	adjustStringLength(&operands, length, spaceChar, false);
 	line = lineNumberStr + addressStr + label + op + operands;
 	return line;
@@ -112,4 +109,26 @@ string readLine(ifstream* file) {
 	string line = "";
 	getline(*file, line);
 	return line;
+}
+
+void writeHeader()
+{
+
+}
+
+void writeError(string error, string fileName)
+{
+	int errLength = error.length();
+	int offset = 31-errLength-3;
+	int excess;
+	char spaceChar = SPACE_CHAR;
+	char asterisk = ASRERISK_CHAR;
+	
+	adjustStringLength(&error, errLength+3, asterisk, true);
+	adjustStringLength(&error, errLength+offset, spaceChar, true);
+	excess = 63-errLength;
+
+	adjustStringLength(&error, errLength+excess, spaceChar, false);
+
+	writeLine(error, fileName);
 }
