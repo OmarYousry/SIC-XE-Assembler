@@ -1,5 +1,6 @@
 #include "Parser.h"
 
+
 bool needNoOperands(string s) {
 	return s.compare("RSUB") == 0 || s.compare("NOBASE") == 0
 			|| s.compare("HIO") == 0 || s.compare("FIX") == 0
@@ -15,15 +16,17 @@ parsedLine parse(string line) {
 	pl.operand1 = "";
 	pl.operand2 = "";
 
-	i = 0;
 	string s[5] = { "", "", "", "", "" };
-
+    i = 0;
 	for (unsigned int j = 0; j < 5 && i < line.length(); j++) {
 		for (; i < line.length() && (line[i] == ' ' || line[i] == '\t'); i++)
 			;
 		for (; i < line.length() && (line[i] != ' ' && line[i] != '\t'); i++)
 			s[j] += line[i];
 	}
+	if(i != line.length())
+        throw -10;      // line containging too many arguments
+
 
 	if (s[0] == "")
 		return pl;
@@ -40,8 +43,7 @@ parsedLine parse(string line) {
 	} else if (s[3] == "") {
 		if (s[1][s[1].length() - 1] == ',' || s[2][0] == ',') {
 			pl.opcode = s[0];
-			pl.operand1 = s[1];
-			pl.operand2 = s[2];
+			pl.operand1 = s[1] + s[2];
 		} else {
 			pl.lable = s[0];
 			pl.opcode = s[1];
@@ -57,6 +59,9 @@ parsedLine parse(string line) {
 			pl.operand1 = s[2] + s[3];
 		}
 	} else {
+	    if(s[3].compare(",") != 0)
+            throw -10;      // line containging too many arguments
+
 		pl.lable = s[0];
 		pl.opcode = s[1];
 		pl.operand1 = s[2] + s[3] + s[4];
@@ -66,15 +71,22 @@ parsedLine parse(string line) {
 	s[1] = "";
 	for (i = 0; i < pl.operand1.length() && pl.operand1[i] != ','; i++)
 		s[0] += pl.operand1[i];
-	for (i++; i < pl.operand1.length(); i++)
-		s[1] += pl.operand1[i];
+    if(i == pl.operand1.length()-1 && pl.operand1[i] == ',')
+        s[1] = ",";
+    else
+        for (i++; i < pl.operand1.length(); i++)
+            s[1] += pl.operand1[i];
 	pl.operand1 = s[0];
 	pl.operand2 = s[1];
 	return pl;
 }
 
 /*int main(){
- parsedLine pl = parse("   LBL2 \t\t\t  JUSB            *gfy   ");
- cout<<"lable: " << pl.lable <<"\nopcode: "<< pl.opcode << "\noper1: "<<pl.operand1<<"\noper2: "<<pl.operand2<<"\n\n";
- }
- */
+    try{
+        parsedLine pl = parse("   LBL2 \t\t\t  JUSB          ff  ,   fff");
+        cout<<"lable: " << pl.lable <<"\nopcode: "<< pl.opcode << "\noper1: "<<pl.operand1<<"\noper2: "<<pl.operand2<<"\n\n";
+    }catch(int e){
+        cout<<"too many arguments\n";
+    }
+}*/
+
