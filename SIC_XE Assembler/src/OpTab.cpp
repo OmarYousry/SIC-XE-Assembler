@@ -371,6 +371,15 @@ map<string, OpInfo*>* getOpTab() {
 	return opTable;
 }
 
+void deleteOpTab() {
+	for (map<string, OpInfo*>::iterator it = opTable->begin();
+			it != opTable->end(); ++it) {
+		OpInfo* ptr = it->second;
+		opTable->erase(it->first);
+		delete ptr;
+	}
+	delete opTable;
+}
 //int main(int argc, char **argv) {
 //	map<string, OpInfo*>* opTab = new map<string, OpInfo*>();
 //	cout << opTab->size() << endl;

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <map>
 #include "StringUtilities.h"
 
 #define LINE_NUMBER_LENGTH 16;
@@ -15,6 +16,9 @@
 #define SPACE_CHAR 0x20;
 #define ZERO_CHAR 0x30
 #define ASTERISK_CHAR 0x2A;
+#define DASH_CHAR 0x2D;
+#define NEW_LINE_CHAR 0x0A;
+#define EQUAL_CHAR 0x3D;
 
 using namespace std;
 
@@ -31,5 +35,9 @@ string readLine(ifstream* file);
 void writeHeader();
 
 void writeError(ofstream* file, string error);
+
+void writeBorder(ofstream* file);
+
+void writeSymTab(ofstream* file, map<string, int>* symTab);
 
 #endif

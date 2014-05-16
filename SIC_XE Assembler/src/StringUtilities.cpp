@@ -120,22 +120,31 @@ float parseFloat(string x) {
 /*
  * Splits the given string using the character s as a delimiter.
  */
-vector<string>* split(string x, char s) {
-	vector<string>* toRet = new vector<string>();
-	string* temp = new string("");
+vector<string> split(string x, char s) {
+	vector<string> toRet;
+	string temp = "";
 	for (unsigned int i = 0; i < x.length(); i++) {
 		if (x.at(i) == s) {
-			if (temp->length() == 0)
+			if (temp.length() == 0)
 				continue;
 
-			toRet->push_back(*temp);
-			temp = new string("");
+			toRet.push_back(temp);
+			temp = "";
 			continue;
 		}
-		(*temp) += x.at(i);
+		(temp) += x.at(i);
 	}
-	if (temp->length() != 0)
-		toRet->push_back(*temp);
+	if (temp.length() != 0)
+		toRet.push_back(temp);
 
 	return toRet;
+}
+
+string mergeStrings(string x, string y, char del) {
+	x = trim(x);
+	y = trim(y);
+
+	if (y.compare("") != 0)
+		return x + del + y;
+	return x;
 }

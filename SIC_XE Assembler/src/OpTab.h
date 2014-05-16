@@ -15,7 +15,7 @@ struct OpInfo {
 	unsigned char format;
 	unsigned char opCode;
 };
-
+void deleteOpTab();
 map<string, OpInfo*>* getOpTab();
 
 #endif

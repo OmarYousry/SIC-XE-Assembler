@@ -21,6 +21,8 @@ int parseHexaDecimal(string x);
 
 float parseFloat(string x);
 
-vector<string>* split(string x, char s);
+vector<string> split(string x, char s);
+
+string mergeStrings(string x, string y, char del);
 
 #endif
