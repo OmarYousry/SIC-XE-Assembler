@@ -1,0 +1,27 @@
+> > 	 P a s s	1 . . . 
+
+line number     address        label    op      operands        
+===============================================================
+                               .2345678901234567890
+1               00000B         ALPHA    LDA     #10             
+                               .This is a comment line
+2               00000B                 +LDA     #10             
+3               000019         BETA     LDX     TEN             
+4               000011                  LDT     FIVE            
+                ***this is an error                            
+                ***this is another error                       
+
+***************************************************************
+
+> > 	 s y m b o l		 t a b l e		 (values in hex)
+
+=========================
+|	name     address	|
+|	----------------	|
+|	fifth       0032	|
+|	first       000A	|
+|	forth       0028	|
+|	second      0014	|
+|	sixth       003C	|
+|	third       001E	|
+=========================

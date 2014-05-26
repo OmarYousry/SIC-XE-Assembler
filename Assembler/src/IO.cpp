@@ -1,5 +1,5 @@
 #include "IO.h"
-//
+
 //int main() {
 //
 //	deleteFile("test.txt");
@@ -20,7 +20,11 @@
 //
 //	ofstream ofile;
 //	ofile.open("test.txt", std::ios::app);
+//	writeHeader(&ofile);
+//	writeComment(&ofile, ".2345678901234567890");
 //	writeLine(&ofile, constructLine(11, "ALPHA", "LDA", "#10"));
+//	writeComment(&ofile, ".This is a comment line");
+//	writeLine(&ofile, constructLine(11, "", "+LDA", "#10"));
 //	writeLine(&ofile, constructLine(25, "BETA", "LDX", "TEN"));
 //	writeLine(&ofile, constructLine(17, "", "LDT", "FIVE"));
 //	writeError(&ofile, "this is an error\nthis is another error");
@@ -41,7 +45,7 @@
 //	line = readLine(&file);
 //	cout << line << endl;
 //
-//	int i = '0';
+//	int i = '=';
 //	cout << hex << i;
 //
 //	return 0;
@@ -63,8 +67,10 @@ string constructLine(int address, string label, string op, string operands) {
 	length = ADDRESS_LENGTH;
 	adjustStringLength(&addressStr, length, spaceChar, false);
 	length = LABEL_LENGTH;
+	if (op.at(0) == '+') length -= 1;
 	adjustStringLength(&label, length, spaceChar, false);
 	length = MNEMONIC_LENGTH;
+	if (op.at(0) == '+') length += 1;
 	adjustStringLength(&op, length, spaceChar, false);
 	length = OPERANDS_LENGTH;
 	adjustStringLength(&operands, length, spaceChar, false);
@@ -73,10 +79,8 @@ string constructLine(int address, string label, string op, string operands) {
 }
 
 void deleteFile(string name) {
-	if (remove(name.c_str()) == 0)
-		cout << "file \"" << name << "\" was deleted" << endl;
-	else
-		cout << "error deleting " << name << endl;
+	remove(name.c_str());
+
 }
 
 void writeLine(ofstream* file, string line)
@@ -84,20 +88,45 @@ void writeLine(ofstream* file, string line)
 	*file << line << endl;
 }
 
-//void writeLine(string line, string name) {
-//	ofstream file;
-//	file.open("test.txt", std::ios_base::app);
-//	file << line << endl;
-//	file.close();
-//}
-
 string readLine(ifstream* file) {
 	string line = "";
 	getline(*file, line);
 	return line;
 }
 
-void writeHeader() {
+void writeHeader(ofstream* file) {
+
+	int fileLineLength = FILE_LINE_LENGTH;
+	int lineNumberLength = LINE_NUMBER_LENGTH;
+	int addressLength = ADDRESS_LENGTH;
+	int labelLength = LABEL_LENGTH;
+	int mnemonicLength = MNEMONIC_LENGTH;
+	int operandsLength = OPERANDS_LENGTH;
+	char spaceChar = SPACE_CHAR;
+	char equalChar = EQUAL_CHAR;
+	string line = "";
+	line = "> > \t P a s s\t1 . . . \n";
+	writeLine(file, line);
+	line = "";
+	string temp = "line number";
+	adjustStringLength(&temp, lineNumberLength, spaceChar, false);
+	line += temp;
+	temp = "address";
+	adjustStringLength(&temp, addressLength, spaceChar, false);
+	line += temp;
+	temp = "label";
+	adjustStringLength(&temp, labelLength, spaceChar, false);
+	line += temp;
+	temp = "op";
+	adjustStringLength(&temp, mnemonicLength, spaceChar, false);
+	line += temp;
+	temp = "operands";
+	adjustStringLength(&temp, operandsLength, spaceChar, false);
+	line += temp;
+	writeLine(file, line);
+	line = "";
+	adjustStringLength(&line, fileLineLength, equalChar, false);
+	writeLine(file, line);
 
 }
 
@@ -126,20 +155,22 @@ void writeError(ofstream* file, string error) {
 void writeBorder(ofstream* file)
 {
 	char newLine = NEW_LINE_CHAR;
+	int fileLineLength = FILE_LINE_LENGTH;
 	string line = "";
 	char asterickChar = ASTERISK_CHAR;
-	for (int i = 0; i < 60; i++) line += asterickChar;
+	for (int i = 0; i < fileLineLength; i++) line += asterickChar;
 	writeLine(file, newLine + line + newLine);
 }
 
 void writeSymTab(ofstream* file, map<string, int>* symTab)
 {
+	if (symTab->empty()) return;
 	char spaceChar = SPACE_CHAR;
 	char dashChar = DASH_CHAR;
 	char equalChar = EQUAL_CHAR;
 	char zeroChar = ZERO_CHAR;
 	string temp;
-	writeLine(file, "s y m b o l\t\t t a b l e\t\t (values in decimal)\n");
+	writeLine(file, "> > \t s y m b o l\t\t t a b l e\t\t (values in hex)\n");
 	temp = "";
 	adjustStringLength(&temp, 25, equalChar, false);
 	writeLine(file, temp);
@@ -171,4 +202,12 @@ void writeSymTab(ofstream* file, map<string, int>* symTab)
 	adjustStringLength(&temp, 25, equalChar, false);
 	writeLine(file, temp);
 
+}
+
+void writeComment(ofstream* file, string comment) {
+	int lineNumberLength = LINE_NUMBER_LENGTH;
+	int addressLength = ADDRESS_LENGTH;
+	char spaceChar = SPACE_CHAR;
+	adjustStringLength(&comment, comment.size() + lineNumberLength + addressLength, spaceChar, true);
+	writeLine(file, comment);
 }

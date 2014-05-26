@@ -10,7 +10,7 @@ bool isReg(string o);
 int f1(string o1, string o2);
 int f2(string op,string o1, string o2);
 int f34(string op,string o1, string o2);
-bool isNumeric(string s);
-bool isHexa(string s);
 void fillDirectives();
+bool checkBYTE(string x);
+bool checkLiteral(string x, bool isReg);
 #endif /* VALIDATE_H_ */
