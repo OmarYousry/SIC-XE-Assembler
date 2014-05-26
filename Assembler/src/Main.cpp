@@ -7,6 +7,7 @@
 
 map<string, OpInfo*>* mainOpTab;
 map<string, int>* mainSymTab;
+vector<parsedLine>* file;
 
 int locCtr;
 bool ended;
@@ -57,6 +58,7 @@ void deleteSymTab() {
 void initTables() {
 	mainOpTab = getOpTab();
 	mainSymTab = new map<string, int>();
+	file = new vector<parsedLine>();
 }
 
 void handleStreams(string in, string out) {
@@ -190,6 +192,7 @@ int main(int argc, char **argv) {
 
 		try {
 			pl = readAndParse();
+			file->push_back(pl);
 		} catch (string* e) {
 			writeFomatted(pl);
 			errorMessage += "\n";
