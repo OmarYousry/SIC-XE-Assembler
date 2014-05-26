@@ -6,6 +6,9 @@
 #include <string>
 
 int validate(parsedLine pl);
+bool isRubbish(string x);
+bool isChar(char x);
+bool isNumber (char a);
 bool isReg(string o);
 int f1(string o1, string o2);
 int f2(string op,string o1, string o2);

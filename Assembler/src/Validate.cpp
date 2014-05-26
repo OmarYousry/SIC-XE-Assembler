@@ -11,7 +11,11 @@ int validate(parsedLine pl) {
 	map<string, OpInfo*>* op = getOpTab();
 	map<string, OpInfo*>::iterator it;
 	map<string, char>::iterator it2;
-	string l = toUpperCase(pl.lable);
+	string label =pl.lable;
+	if(isRubbish(label))
+	{
+		throw new string("Invalid declaration of Label Field");
+	}
 	string o1 = toUpperCase(pl.operand1);
 	string o2 = toUpperCase(pl.operand2);
 	int ret = -1;
@@ -20,9 +24,9 @@ int validate(parsedLine pl) {
 
 	if (o2.compare("") != 0 && o2.at(0) == ',')
 		throw new string("Extra characters");
-
-	it = op->find(l);
-	it2 = directives->find(l);
+	label = toUpperCase(label);
+	it = op->find(label);
+	it2 = directives->find(label);
 	//if label is reserved word
 	if (it2 != directives->end() || it != op->end()) {
 //		cout << "the wrong label " << l << endl;
@@ -41,10 +45,30 @@ int validate(parsedLine pl) {
 			}
 		} else if (opCode.compare("START") == 0) {
 			if (!isHexa(o1) || o2.compare("") != 0)
-				throw new string("START error");
+				throw new string("START ERROR");
 		} else if (opCode.compare("END") == 0) {
 			if (o2.compare("") != 0)
 				throw new string("END error");
+		} else if (opCode.compare("EQU") == 0) {
+			if (label.compare("") == 0)
+				throw new string("Missing label Field in Equate");
+			if (o2.compare("") != 0)
+				throw new string("Invalid operands , directives");
+			if (o1.compare("") == 0)
+				throw new string("missing operands , directives");
+		} else if (opCode.compare("ORG") == 0 || opCode.compare("BASE") == 0) {
+			if (label.compare("") != 0)
+				throw new string("Label Field should be Empty");
+			if (o2.compare("") != 0)
+				throw new string("Invalid operands , directives");
+			if (o1.compare("") == 0)
+				throw new string("missing operands , directives");
+		} else if (opCode.compare("LTORG") == 0
+				|| opCode.compare("NOBASE") == 0) {
+			if (label.compare("") != 0)
+				throw new string("Label Field should be Empty");
+			if (o2.compare("") != 0 || o1.compare("") != 0)
+				throw new string("operand fields should be kept empty");
 		} else {
 			if (o2.compare("") != 0)
 				throw new string("Invalid operands , directives");
@@ -210,7 +234,12 @@ bool checkLiteral(string x, bool isReg) {
 				throw new string("Invalid Literal");
 			}
 		} else {
-			throw new string("Invalid Literal");
+			string inner = x.substr(1, x.length());
+			if (isNumeric(inner)) {
+				return true;
+			} else {
+				throw new string("Invalid Literal");
+			}
 		}
 	}
 	throw new string("Invalid Literal");
@@ -227,11 +256,40 @@ bool checkLiteral(string x, bool isReg) {
 	 throw new string("Illegal operand");
 	 */
 }
+bool isChar(char a){
+	int ascii = a;
+	if(ascii >= 65 && ascii<=90)
+		return true;
+	if(ascii >= 97 && ascii <=122)
+		return true;
+	return false;
+}
+
+bool isRubbish(string x){
+	if(x.length()== 0 )
+		return true;
+	if(x.compare("") == 0)
+		return true;
+	if(isNumber(x.at(0)))
+		return true;
+	for (unsigned int i = 0; i < x.length(); i++) {
+		if(!isChar(x.at(i)) && !isNumber(x.at(i)))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+bool isNumber (char a){
+	int ascii = a;
+	if(ascii>=48 && ascii <=57)
+		return true;
+	return false;
+}
 //int main() {
 //
 //	try {
-////		cout<<"M"<<endl;
-//		cout << validate(parse("         END")) << endl;
+//		cout << validate(parse("bfs   LDCH     =1S0")) << endl;
 //
 //	} catch (string* e) {
 //		cout << *e << endl;
