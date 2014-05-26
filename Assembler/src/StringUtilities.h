@@ -15,6 +15,10 @@ string toUpperCase(string x);
 
 string trim(string x);
 
+bool isNumeric(string s);
+
+bool isHexa(string s);
+
 int parseDecimal(string x);
 
 int parseHexaDecimal(string x);

@@ -37,9 +37,16 @@ string toUpperCase(string x) {
  * Trims the leading and forwarding spaces.
  */
 string trim(string x) {
+
+	if (x.compare("") == 0)
+		return x;
+
 	unsigned int i;
 	for (i = 0; i < x.length() && x.at(i) == ' '; i++)
 		;
+
+	if (i == x.length())
+		return "";
 
 	unsigned int j;
 	for (j = x.length() - 1; j >= 0 && x.at(j) == ' '; j--)
@@ -144,7 +151,31 @@ string mergeStrings(string x, string y, char del) {
 	x = trim(x);
 	y = trim(y);
 
-	if (y.compare("") != 0)
-		return x + del + y;
+	if (y.compare("") != 0) {
+		return x.append("" + del).append(y);
+	}
 	return x;
 }
+
+bool isNumeric(string s) {
+	if (s.length() == 0)
+		return false;
+	for (unsigned int i = 0; i < s.length(); i++) {
+		if (s.at(i) - '0' < 0 || s.at(i) - '0' > 9)
+			return false;
+	}
+	return true;
+}
+
+bool isHexa(string s) {
+	if (s.length() == 0)
+		return false;
+	for (unsigned int i = 0; i < s.length(); i++) {
+		if (s.at(i) != 'A' && s.at(i) != 'B' && s.at(i) != 'C' && s.at(i) != 'D'
+				&& s.at(i) != 'E' && s.at(i) != 'F'
+				&& (s.at(i) - '0' < 0 || s.at(i) - '0' > 9))
+			return false;
+	}
+	return true;
+}
+

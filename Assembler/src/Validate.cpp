@@ -4,9 +4,8 @@
 #include "StringUtilities.h"
 
 string reg[] = { "A", "X", "L", "B", "S", "T", "F" };
-map<string, char>* directives = new map<string,char>();
+map<string, char>* directives = new map<string, char>();
 int validate(parsedLine pl) {
-
 	fillDirectives();
 	string opCode = toUpperCase(pl.opcode);
 	map<string, OpInfo*>* op = getOpTab();
@@ -16,20 +15,31 @@ int validate(parsedLine pl) {
 	string o1 = toUpperCase(pl.operand1);
 	string o2 = toUpperCase(pl.operand2);
 	int ret = -1;
-	cout << "label  : " << l << endl << "opCode : " << opCode << endl
-			<< "op 1   : " << o1 << endl << "op 2   : " << o2 << endl;
-	if (o2.at(0) == ',')
+//	cout << "label  : " << l << endl << "opCode : " << opCode << endl
+//			<< "op 1   : " << o1 << endl << "op 2   : " << o2 << endl;
+
+	if (o2.compare("") != 0 && o2.at(0) == ',')
 		throw new string("Extra characters");
 
 	it = op->find(l);
 	it2 = directives->find(l);
-	if(it2 != directives->end() || it != op->end()){
+	//if label is reserved word
+	if (it2 != directives->end() || it != op->end()) {
+//		cout << "the wrong label " << l << endl;
 		throw new string("Invalid Label field");
 	}
-	it2 = directives->find(opCode);
-	if (it2 != directives->end()) {
 
-		if (opCode.compare("START") == 0) {
+	it2 = directives->find(opCode);
+	//IF directive
+	if (it2 != directives->end()) {
+		if (opCode.compare("BYTE") == 0) {
+			if (o1.compare("") != 0) {
+				if (!checkBYTE(o1) || o2.compare("") != 0)
+					throw new string("Invalid operands  for Byte");
+			} else {
+				throw new string("Invalid operands for Byte");
+			}
+		} else if (opCode.compare("START") == 0) {
 			if (!isHexa(o1) || o2.compare("") != 0)
 				throw new string("START error");
 		} else if (opCode.compare("END") == 0) {
@@ -47,15 +57,19 @@ int validate(parsedLine pl) {
 	} else if (opCode.at(0) == '+') {
 		opCode = opCode.substr(1, opCode.length() - 1);
 		it = op->find(opCode);
-		if ((it->second->format) != FORMAT_3_4) {
+		if (it == op->end()) {
+			throw new string("Invalid opcode field");
+		}
+		if ((it->second->format) == FORMAT_3_4) {
 			if (f34(opCode, o1, o2) == 3)
 				ret = 4;
 		}
 	} else {
+
 		it = op->find(opCode);
 
 		if (it == op->end()) {
-			throw new string("Invalid opcode");
+			throw new string("Invalid opcode 1");
 		} else {
 
 			if ((it->second->format) == FORMAT_1) {
@@ -66,43 +80,12 @@ int validate(parsedLine pl) {
 			{
 				ret = f34(opCode, o1, o2);
 			}
-
-//			if ((it->second->format) == FORMAT_1) {
-//				if (o1.compare("") != 0 || o2.compare("") != 0)
-//					throw new string("Invalid format 1");
-//
-//			} else if (it->second->format == FORMAT_2) {
-//				if (opCode.compare("TIXR") == 0 || opCode.compare("SVC") == 0
-//						|| opCode.compare("CLEAR") == 0) {
-//					if (o2.compare("") != 0)
-//						throw new string("Invalid format 2");
-//					if (o1.compare("") == 0)
-//						throw new string("Invalid format 2");
-//				} else {
-//					if (o1.compare("") == 0 || o2.compare("") == 0)
-//						throw new string("Invalid format 2");
-//				}
-//			} else if (it->second->format == FORMAT_3_4) {
-//				if (opCode.compare("RSUB") == 0) {
-//					if (o1.compare("") != 0 || o2.compare("") != 0)
-//						throw new string("Invalid format 3/4 1");
-//				} else if (o2.compare("X") == 0) {
-//					if (o1.compare("") == 0)
-//						throw new string("Invalid format 3/4 2");
-//				} else {
-//					if (o2.compare("") != 0)
-//						throw new string("Invalid format 3/4 3");
-//					if (o1.compare("") == 0)
-//						throw new string("Invalid format 3/4 4");
-//				}
-//			}
-
 		}
 
 	}
+
 	return ret;
 }
-
 int f1(string o1, string o2) {
 	if (o1.compare("") != 0 || o2.compare("") != 0)
 		throw new string("Invalid format 1");
@@ -136,14 +119,26 @@ int f2(string op, string o1, string o2) {
 int f34(string op, string o1, string o2) {
 	if (op.compare("RSUB") == 0) {
 		if (o1.compare("") != 0 || o2.compare("") != 0)
-			throw new string("Invalid format 3/4 1");
-	}
-	if (o2.compare("") != 0)
-		if (o2.compare("X") != 0)
 			throw new string("Invalid format 3/4");
-	if (o1.compare("") == 0)
-		throw new string("Invalid format 3/4");
-
+		else
+			return 3;
+	} else if (o1.at(0) == '=') {
+		if (op.compare("LDCH") == 0) {
+			if (!checkLiteral(o1, false) || o2.compare("") != 0) {
+				throw new string("Invalid Literal");
+			}
+		} else {
+			if (!checkLiteral(o1, true) || o2.compare("") != 0) {
+				throw new string("Invalid Literal");
+			}
+		}
+	} else {
+		if (o2.compare("") != 0)
+			if (o2.compare("X") != 0)
+				throw new string("Invalid format 3/4");
+		if (o1.compare("") == 0)
+			throw new string("Invalid format 3/4");
+	}
 	return 3;
 }
 bool isReg(string o) {
@@ -153,26 +148,7 @@ bool isReg(string o) {
 	}
 	return false;
 }
-bool isNumeric(string s) {
-	if (s.length() == 0)
-		return false;
-	for (int i = 0; i < s.length(); i++) {
-		if (s.at(i) - '0' < 0 || s.at(i) - '0' > 9)
-			return false;
-	}
-	return true;
-}
-bool isHexa(string s) {
-	if (s.length() == 0)
-		return false;
-	for (int i = 0; i < s.length(); i++) {
-		if (s.at(i) != 'A' && s.at(i) != 'B' && s.at(i) != 'C' && s.at(i) != 'D'
-				&& s.at(i) != 'E' && s.at(i) != 'F'
-				&& (s.at(i) - '0' < 0 || s.at(i) - '0' > 9))
-			return false;
-	}
-	return true;
-}
+
 void fillDirectives() {
 
 	directives->insert(pair<string, char>("BYTE", 'a'));
@@ -187,11 +163,75 @@ void fillDirectives() {
 	directives->insert(pair<string, char>("NOBASE", 'a'));
 	directives->insert(pair<string, char>("LTORG", 'a'));
 }
+bool checkBYTE(string x) {
+//	cout<<x<<endl;
+	if (x.at(0) == 'X' || x.at(0) == 'C') {
+		if (!(x.length() > 0
+				&& (x.at(1) == '\'' && x.at(x.length() - 1) == '\'')))
+			throw new string("not a hexadecimal\\character string");
+		else {
+//			cout<<"aaaaaaaaa"<<endl;
+			return true;
+		}
+	}
+	throw new string("Illegal operand");
+}
+bool checkLiteral(string x, bool isReg) {
+	if (x.at(0) == '=') {
+		if (x.at(1) == 'X') {
+			if (x.length() >= 2) {
+				if (x.at(2) == '\'' && x.at(x.length() - 1) == '\'') {
+					int numChars = x.length() - 4;
+					string inner = x.substr(3, x.length() - 2);
+					if (!isHexa(inner))
+						throw new string("Invalid operands for Literal");
+					if (isReg && numChars == 6)
+						return true;
+					else if (!isReg && numChars == 2)
+						return true;
+					else
+						throw new string("Invalid Literal Length");
+				}
+			} else {
+				throw new string("Invalid Literal");
+			}
+		} else if (x.at(1) == 'C') {
+			if (x.length() > 0) {
+				if (x.at(2) == '\'' && x.at(x.length() - 1) == '\'') {
+					int numChars = x.length() - 4;
+					if (isReg && numChars == 3)
+						return true;
+					else if (!isReg && numChars == 1)
+						return true;
+					else
+						throw new string("Invalid Literal Length");
+				}
+			} else {
+				throw new string("Invalid Literal");
+			}
+		} else {
+			throw new string("Invalid Literal");
+		}
+	}
+	throw new string("Invalid Literal");
 
+	/*if (x.at(0) == 'X' || x.at(0) == 'C')
+	 {
+	 if (!(x.length() >0 && (x.at(1) == '\'' && x.at(x.length() - 1) == '\'')))
+	 throw new string("not a hexadecimal\\character string");
+	 else {
+	 int numChars =
+	 }
+	 return true;
+	 }
+	 throw new string("Illegal operand");
+	 */
+}
 //int main() {
 //
 //	try {
-//		cout<<validate(parse("         LDA     BETA"))<<endl;
+////		cout<<"M"<<endl;
+//		cout << validate(parse("         END")) << endl;
 //
 //	} catch (string* e) {
 //		cout << *e << endl;
